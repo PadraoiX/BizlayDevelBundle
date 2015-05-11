@@ -1,0 +1,56 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+
+<div class="row m-b-md">
+        <div class="col-sm-12">
+            <h1 class="m-b-xs text-black">%ENTITYNAME%</h1>
+            <ol class="breadcrumb m-n">
+                <li>
+                    <a href="#">Início</a>
+                </li>
+                <li>Geral</li>
+                <li class="active">%ENTITYNAME%</li>
+            </ol>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form id="entityForm" class="form-horizontal" action="{% if saveRoute is defined and saveRoute != '' %}{{ path(saveRoute) }}{% endif %}" method="POST" role="form" data-parsley-validate="" novalidate="">
+                <input type="hidden" name="__csrf" value="{{ csrf }}">
+                <input type="hidden" name="id" value="{{ entityData.id }}">
+                <section class="panel panel-default" role="region">
+                    <header class="panel-heading">
+                        <div class="pull-right">
+                            <a href="{{ path(indexRoute) }}" class="btn btn-s-md btn-default"><i class="fa fa-long-arrow-left"></i> Cancelar</a>
+                            <a href="#" class="btn btn-s-md btn-default" data-toggle="modal" data-target="#ajudaModal"><i class="fa fa-question-circle"></i> Ajuda</a>
+                            <button type="submit" class="btn btn-s-md btn-success" data-toastr="success" data-message="Cadastro realizado com sucesso."><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                        <h4>{{ formTitleAction }} %ENTITYNAME%</h4>
+                    </header>
+
+                    <article class="panel-body" role="article">
+
+                        <!-- INÍCIO DOS CAMPOS DO FORMULÁRIO -->
+
+                        %FORM%
+
+                        {{ dump(entityData) }}
+
+                        <!-- FIM DOS CAMPOS DO FORMULÁRIO -->
+
+                    </article>
+                    <footer class="panel-footer clearfix">
+                        <div class="pull-right">
+                            <a href="{{ path(indexRoute) }}" class="btn btn-s-md btn-default"><i class="fa fa-long-arrow-left"></i> Cancelar</a>
+                            <a href="#" class="btn btn-s-md btn-default" data-toggle="modal" data-target="#ajudaModal"><i class="fa fa-question-circle"></i> Ajuda</a>
+                            <button type="submit" class="btn btn-s-md btn-success" data-toastr="success" data-message="Cadastro realizado com sucesso."><i class="fa fa-save"></i> Salvar</button>
+                        </div>
+                    </footer>
+                </section>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

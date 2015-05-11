@@ -1,0 +1,11 @@
+{% extends '%BUNDLENAME%:%ENTITYNAME%:form.html.twig' %}
+
+{% block script %}
+    <script>
+        $(document).ready(function() {
+            $('#entityForm input, select, textarea').attr('readOnly', true);
+            $('#entityForm input, select, textarea').attr('disabled', true);
+            $('#entityForm :submit').remove();
+        });
+    </script>
+{% endblock %}

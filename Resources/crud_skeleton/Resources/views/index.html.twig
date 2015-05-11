@@ -1,0 +1,25 @@
+{% extends '::base.html.twig' %}
+
+{% import "CrudBundle::datatable.html.twig"  as datatable %}
+
+{% block body %}
+    {{ datatable.generateHTML(
+            formData,
+            '%ENTITYNAME%',
+            formTitleAction,
+            ['Id', 'Ações'],
+            createRoute,
+            exportExcelRoute,
+            exportPdfRoute,
+            '%BUNDLENAME%:%ENTITYNAME%:searchform.html.twig'
+    ) }}
+{% endblock %}
+
+{% block script %}
+    {{ datatable.generateScript(
+            searchRoute,
+            ['g.id', 'g.acoes'],
+            csrf,
+            deleteRoute
+    ) }}
+{% endblock %}

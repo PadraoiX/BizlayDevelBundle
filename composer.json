@@ -1,0 +1,29 @@
+{
+    "name": "sansis/devel-bundle",
+    "description": "Bundle para reversa de banco de dados e criação de cruds automáticos",
+    "license": "Commercial",
+    "type": "symfony-bundle",
+    "authors": [{
+        "name": "Pablo Santiago Sanchez",
+        "email": "phackwer@gmail.com"
+    }],
+    "minimum-stability": "dev",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://sansis.visualstudio.com/DefaultCollection/_git/CrudBundle"
+        }, {
+            "type": "vcs",
+            "url": "https://sansis.visualstudio.com/DefaultCollection/_git/BizlayBundle"
+        }
+    ],
+    "require": {
+        "sansis/crud-bundle": "~0.0"
+    },
+    "autoload": {
+        "psr-0": {
+          "SanSIS\\DevelBundle": ""
+        }
+    },
+    "target-dir": "SanSIS/DevelBundle"
+}
