@@ -1,4 +1,4 @@
-{
+﻿{
     "name": "sansis/devel-bundle",
     "description": "Bundle para reversa de banco de dados e criação de cruds automáticos",
     "license": "Commercial",
@@ -10,10 +10,10 @@
     "minimum-stability": "dev",
     "repositories": [
         {
-            "type": "vcs",
+            "type": "git",
             "url": "https://sansis.visualstudio.com/DefaultCollection/_git/CrudBundle"
         }, {
-            "type": "vcs",
+            "type": "git",
             "url": "https://sansis.visualstudio.com/DefaultCollection/_git/BizlayBundle"
         }
     ],
