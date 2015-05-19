@@ -44,14 +44,19 @@ class DbReverseService extends DevelService
         //Altera parâmetros da conexão
         $this->em = $entityManager;
         $this->conn = $entityManager->getConnection();
-        //Plataforma personalizada
-        $this->platform = new SysAllOraclePlatform();
-        //Schema manager personalizado
-        $this->scm = new SysAllOracleSchemaManager($this->conn, $this->platform);
+        if ($this->checkOracle()) {
+            //Plataforma personalizada
+            $this->platform = new SysAllOraclePlatform();
+            //Schema manager personalizado
+            $this->scm = new SysAllOracleSchemaManager($this->conn, $this->platform);
 
-        //obtém e define driver utilizado
-        $this->driver = new DatabaseDriver($this->scm);
-        $entityManager->getConfiguration()->setMetadataDriverImpl($this->driver);
+            //obtém e define driver utilizado
+            $this->driver = new DatabaseDriver($this->scm);
+            $entityManager->getConfiguration()->setMetadataDriverImpl($this->driver);
+        } else {
+            $this->scm = $this->conn->getSchemaManager();
+            $this->driver = $entityManager->getConfiguration()->getMetadataDriverImpl();
+        }
 
         //realiza a reversa do banco
         $this->cmf = new DisconnectedClassMetadataFactory();
@@ -60,14 +65,42 @@ class DbReverseService extends DevelService
         parent::__construct($dto, $entityManager);
     }
 
-/**
- * Retorna lista de Schemas disponíneis no banco de dados
- *
- * @return [type] [description]
- */
+    public function checkOracle()
+    {
+        $params = $this->conn->getParams();
+        return (bool) strstr($params['driver'], 'oci');
+    }
+
+    /**
+     * Retorna lista de Schemas disponíneis no banco de dados
+     *
+     * @return [type] [description]
+     */
+    public function getDatabases()
+    {
+        if ($this->checkOracle()) {
+            throw new \Exception('Oracle cant list databases, only current connection schemas.');
+        } else {
+            $dbs = $this->scm->listDatabases();
+        }
+
+        asort($dbs);
+
+        return $dbs;
+    }
+
+    /**
+     * Retorna lista de Schemas disponíneis no banco de dados
+     *
+     * @return [type] [description]
+     */
     public function getSchemas()
     {
-        $schemas = $this->scm->listDatabases();
+        if ($this->checkOracle()) {
+            $schemas = $this->scm->listDatabases();
+        } else {
+            $schemas = $this->scm->getSchemaNames();
+        }
 
         asort($schemas);
 
