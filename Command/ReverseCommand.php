@@ -33,7 +33,7 @@ class ReverseCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $help = "                   Gerador de Entidades a partir de reversa do banco de dados Oracle";
+        $help = "                   Gerador de Entidades a partir de reversa do banco de dados";
 
         $this->printBrasil($help, $output);
 
