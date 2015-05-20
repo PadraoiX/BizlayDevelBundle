@@ -51,12 +51,15 @@ class DbReverseService extends DevelService
             $this->scm = new SysAllOracleSchemaManager($this->conn, $this->platform);
 
             //obtém e define driver utilizado
-            $this->driver = new DatabaseDriver($this->scm);
-            $entityManager->getConfiguration()->setMetadataDriverImpl($this->driver);
+            //             $this->driver = new DatabaseDriver($this->scm);
+            //             $entityManager->getConfiguration()->setMetadataDriverImpl($this->driver);
         } else {
             $this->scm = $this->conn->getSchemaManager();
-            $this->driver = $entityManager->getConfiguration()->getMetadataDriverImpl();
+//             $this->driver = $entityManager->getConfiguration()->getMetadataDriverImpl();
         }
+
+        $this->driver = new DatabaseDriver($this->scm);
+        $entityManager->getConfiguration()->setMetadataDriverImpl($this->driver);
 
         //realiza a reversa do banco
         $this->cmf = new DisconnectedClassMetadataFactory();
@@ -69,6 +72,12 @@ class DbReverseService extends DevelService
     {
         $params = $this->conn->getParams();
         return (bool) strstr($params['driver'], 'oci');
+    }
+
+    public function checkPostgresql()
+    {
+        $params = $this->conn->getParams();
+        return (bool) strstr($params['driver'], 'pgsql');
     }
 
     /**
@@ -115,8 +124,9 @@ class DbReverseService extends DevelService
     public function getSchemaTables()
     {
         $schema = $this->getDto()->query->get('schema');
-
-        $this->scm->setSchema($schema);
+        if (method_exists($this->scm, 'setSchema')) {
+            $this->scm->setSchema($schema);
+        }
         $tables = $this->scm->listTableNames();
 
         sort($tables);
@@ -165,7 +175,9 @@ class DbReverseService extends DevelService
 
         $this->driver->setNamespace($nspEntity . '\\');
 
-        $this->scm->setSchema($schema);
+        if (method_exists($this->scm, 'setSchema')) {
+            $this->scm->setSchema($schema);
+        }
 
         $egn = new \Doctrine\ORM\Tools\EntityGenerator();
         $egn->setGenerateAnnotations(true);
@@ -205,7 +217,14 @@ class DbReverseService extends DevelService
             if (isset($class[1]) && $class[1]) {
                 $name[$pos] = ucfirst($class[1]);
             }
-            $name[$pos] = substr($name[$pos], 2);
+
+            /**
+             * @todo  corrigir para que retire nomes como tb_, rl_, au_, etc
+             */
+            // if (strpos($currTable, '_') == 2) {
+            //     $name[$pos] = substr($name[$pos], 2);
+            // }
+
             $className = $name[$pos];
             $entity->name = implode('\\', $name);
 
@@ -225,9 +244,11 @@ class DbReverseService extends DevelService
             if (!isset($bkp['columnName'])) {
                 throw new \Exception('Não é possível criar o nome da Sequence. Verifique a modelagem da tabela ' . $schema . '.' . $currTable);
             }
-            $sequenceName = $this->generateSequenceName($schema, $currTable, $bkp['columnName']);
-            $metadata[$key]->idGenerator = new SequenceGenerator($sequenceName, 1);
-            $metadata[$key]->sequenceGeneratorDefinition['sequenceName'] = $sequenceName;
+            if ($this->checkOracle() || $this->checkPostgresql()) {
+                $sequenceName = $this->generateSequenceName($schema, $currTable, $bkp['columnName']);
+                $metadata[$key]->idGenerator = new SequenceGenerator($sequenceName, 1);
+                $metadata[$key]->sequenceGeneratorDefinition['sequenceName'] = $sequenceName;
+            }
             unset($metadata[$key]->fieldMappings[$id]);
             $metadata[$key]->fieldMappings['id'] = $bkp;
 
@@ -239,7 +260,11 @@ class DbReverseService extends DevelService
                 if (isset($class[1]) && $class[1]) {
                     $name[$pos] = $class[0] . ucfirst($class[1]);
                 }
-                $name[$pos] = substr($name[$pos], 2);
+
+                /**
+                 * @todo  corrigir para que retire nomes como tb_, rl_, au_, etc
+                 */
+                // $name[$pos] = substr($name[$pos], 2);
 
                 $metadata[$key]->associationMappings[$assk]['targetEntity'] = implode('\\', $name);
 
@@ -249,7 +274,11 @@ class DbReverseService extends DevelService
                 if (isset($class[1]) && $class[1]) {
                     $name[$pos] = $class[0] . ucfirst($class[1]);
                 }
-                $name[$pos] = substr($name[$pos], 2);
+
+                /**
+                 * @todo  corrigir para que retire nomes como tb_, rl_, au_, etc
+                 */
+                // $name[$pos] = substr($name[$pos], 2);
 
                 $metadata[$key]->associationMappings[$assk]['sourceEntity'] = implode('\\', $name);
             }
@@ -330,26 +359,30 @@ class DbReverseService extends DevelService
      */
     public function generateSequenceName($schema, $table, $columnName)
     {
-        $seqName = strtoupper(
-            'sq_' .
-            str_replace('_', '', substr($table, 2)) .
-            '_' .
-            str_replace('_', '', $columnName)
-        );
-
-        if (strlen($seqName) > 30) {
-            echo "FALHA: Sequence com mais de 30 caracteres: " . $seqName . "\n";
+        if ($this->checkOracle()) {
             $seqName = strtoupper(
                 'sq_' .
                 str_replace('_', '', substr($table, 2)) .
                 '_' .
-                str_replace(array('_', 'A', 'E', 'I', 'O', 'U'), '', $columnName)
+                str_replace('_', '', $columnName)
             );
-        }
 
-        if (strlen($seqName) > 30) {
-            echo "FALHA: Sequence ainda com mais de 30 caracteres: " . $seqName . "\n";
-            $seqName = substr($seqName, 0, 30);
+            if (strlen($seqName) > 30) {
+                echo "FALHA: Sequence com mais de 30 caracteres: " . $seqName . "\n";
+                $seqName = strtoupper(
+                    'sq_' .
+                    str_replace('_', '', substr($table, 2)) .
+                    '_' .
+                    str_replace(array('_', 'A', 'E', 'I', 'O', 'U'), '', $columnName)
+                );
+            }
+
+            if (strlen($seqName) > 30) {
+                echo "FALHA: Sequence ainda com mais de 30 caracteres: " . $seqName . "\n";
+                $seqName = substr($seqName, 0, 30);
+            }
+        } else if ($this->checkPostgresql()) {
+            $seqName = $table . '_' . $columnName . '_seq';
         }
 
         echo "Nome esperado para Sequence (com schema): " . $schema . '.' . $seqName . "\n";
