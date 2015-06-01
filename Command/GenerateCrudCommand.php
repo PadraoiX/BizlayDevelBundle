@@ -87,7 +87,7 @@ class GenerateCrudCommand extends ContainerAwareCommand
         $dto->query->set('ENTITYNAME', $shortName);
         $dto->query->set('ENTITYFULLNAME', $rootEntity);
         $dto->query->set('ENTITYNAMELOWER', strtolower($shortName));
-        $dto->query->set('ATTRS', $ent->buildFullEmptyEntity()->toArray());
+        $dto->query->set('ATTRS', $ent->buildFullEmptyEntity());
 
         $service->setDto($dto);
         $service->generateCrud();
