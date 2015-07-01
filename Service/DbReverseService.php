@@ -50,13 +50,14 @@ class DbReverseService extends DevelService
             //Schema manager personalizado
             $this->scm = new SysAllOracleSchemaManager($this->conn, $this->platform);
 
-            //obtém e define driver utilizado
-            $this->driver = new DatabaseDriver($this->scm);
-            $entityManager->getConfiguration()->setMetadataDriverImpl($this->driver);
         } else {
             $this->scm = $this->conn->getSchemaManager();
-            $this->driver = $entityManager->getConfiguration()->getMetadataDriverImpl();
+            // $this->driver = $entityManager->getConfiguration()->getMetadataDriverImpl();
         }
+
+        //obtém e define driver utilizado
+        $this->driver = new DatabaseDriver($this->scm);
+        $entityManager->getConfiguration()->setMetadataDriverImpl($this->driver);
 
         //realiza a reversa do banco
         $this->cmf = new DisconnectedClassMetadataFactory();
@@ -116,7 +117,10 @@ class DbReverseService extends DevelService
     {
         $schema = $this->getDto()->query->get('schema');
 
-        $this->scm->setSchema($schema);
+        if ($this->checkOracle()) {
+            $this->scm->setSchema($schema);
+        }
+
         $tables = $this->scm->listTableNames();
 
         sort($tables);
@@ -165,7 +169,9 @@ class DbReverseService extends DevelService
 
         $this->driver->setNamespace($nspEntity . '\\');
 
-        $this->scm->setSchema($schema);
+        if ($this->checkOracle()) {
+            $this->scm->setSchema($schema);
+        }
 
         $egn = new \Doctrine\ORM\Tools\EntityGenerator();
         $egn->setGenerateAnnotations(true);
