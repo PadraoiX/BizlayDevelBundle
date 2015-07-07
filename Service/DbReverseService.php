@@ -176,7 +176,7 @@ class DbReverseService extends DevelService
 
         $egn = new \Doctrine\ORM\Tools\EntityGenerator();
         $egn->setGenerateAnnotations(true);
-        // $egn->setClassToExtend('\\SanSIS\\BizlayBundle\\Entity\\AbstractEntity');
+        $egn->setClassToExtend('\\SanSIS\\BizlayBundle\\Entity\\AbstractEntity');
         $egn->setGenerateStubMethods(true);
         $egn->setUpdateEntityIfExists(true);
 
@@ -333,25 +333,25 @@ class DbReverseService extends DevelService
 
         exec('php app' . $dsp . 'console doctrine:generate:entities ' . $bundleName);
 
-        //Corrige a definição do isValid()
-        // foreach ($metadata as $key => $entity) {
-        //     $name = explode('\\', $entity->name);
+        Corrige a definição do isValid()
+        foreach ($metadata as $key => $entity) {
+            $name = explode('\\', $entity->name);
 
-        //     $pos = count($name) - 1;
-        //     $class = explode('.', $name[$pos]);
-        //     if (isset($class[1]) && $class[1]) {
-        //         $name[$pos] = ucfirst($class[1]);
-        //     }
-        //     $className = $name[$pos];
+            $pos = count($name) - 1;
+            $class = explode('.', $name[$pos]);
+            if (isset($class[1]) && $class[1]) {
+                $name[$pos] = ucfirst($class[1]);
+            }
+            $className = $name[$pos];
 
-        //     $entityCode = file_get_contents($model_dir . $className . ".php");
-        //     $entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }",
-        //         "isValid()\n    {\n        parent::isValid();\n    }",
-        //         $entityCode);
+            $entityCode = file_get_contents($model_dir . $className . ".php");
+            $entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }",
+                "isValid()\n    {\n        parent::isValid();\n    }",
+                $entityCode);
 
-        //     file_put_contents($model_dir . $className . ".php", $entityCode);
-        //     echo "isValid da entidade corrigido\n";
-        // }
+            file_put_contents($model_dir . $className . ".php", $entityCode);
+            echo "isValid da entidade corrigido\n";
+        }
 
     }
 

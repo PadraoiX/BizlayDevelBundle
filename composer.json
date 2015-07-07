@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "sansis/crud-bundle": "dev-master"
+        "sansis/bizlaycrud-bundle": "dev-master"
     },
     "autoload": {
         "psr-0": {
