@@ -1,4 +1,4 @@
-# SANSIS - DEVELUNDLE
+# SANSIS - DEVELBUNDLE
 
 O DevelBundle é um bundle criado especificamente para trabalhar com o banco de dados Oracle. Ele complementa
 alguns itens que faltam à reversa da doctrine, ajusta as entidades para o formato de trabalho da arquitetura

@@ -3,7 +3,8 @@
 namespace SanSIS\DevelBundle\Service;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Id\SequenceGenerator;
+// use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use \Doctrine\Common\Annotations\AnnotationReader;
 use \JMS\DiExtraBundle\Annotation as DI;
@@ -175,7 +176,7 @@ class DbReverseService extends DevelService
 
         $egn = new \Doctrine\ORM\Tools\EntityGenerator();
         $egn->setGenerateAnnotations(true);
-        $egn->setClassToExtend('\\SanSIS\\BizlayBundle\\Entity\\AbstractEntity');
+        // $egn->setClassToExtend('\\SanSIS\\BizlayBundle\\Entity\\AbstractEntity');
         $egn->setGenerateStubMethods(true);
         $egn->setUpdateEntityIfExists(true);
 
@@ -211,7 +212,11 @@ class DbReverseService extends DevelService
             if (isset($class[1]) && $class[1]) {
                 $name[$pos] = ucfirst($class[1]);
             }
-            $name[$pos] = substr($name[$pos], 2);
+
+            /**
+             * @TODO AJUSTAR O NOME DA ENTIDADE!
+             */
+            $name[$pos] = str_replace('TbProj', '', $name[$pos]); //substr($name[$pos], 2);
             $className = $name[$pos];
             $entity->name = implode('\\', $name);
 
@@ -222,8 +227,21 @@ class DbReverseService extends DevelService
 
             echo "Nome corrigido da entidade: $entity->name \n";
 
-            //var_dump($metadata[$key]);die;
+            /**
+             * Corrige o nome das colunas retirando as duas primeiras letras referentes ao tipo e colocando uc_first para todas.
+             */
+            foreach ($metadata[$key]->fieldMappings as $k => $v) {
+                echo strpos(strtolower($v['columnName']), 'fl_');
+                if (strpos(strtolower($v['columnName']), 'fl_') === 0) {
+                    $metadata[$key]->fieldMappings[$k]['fieldName'] = 'is' . substr($v['fieldName'], 2);
+                } else if (strpos($v['columnName'], '_') == 2) {
+                    $metadata[$key]->fieldMappings[$k]['fieldName'] = lcfirst(substr($v['fieldName'], 2));
+                }
+            }
 
+            /**
+             * Alterando o nome da PK da tabela para id no objeto.
+             */
             $id = $metadata[$key]->identifier[0];
             $metadata[$key]->identifier[0] = 'id';
             $metadata[$key]->fieldMappings[$id]['fieldName'] = 'id';
@@ -231,21 +249,32 @@ class DbReverseService extends DevelService
             if (!isset($bkp['columnName'])) {
                 throw new \Exception('Não é possível criar o nome da Sequence. Verifique a modelagem da tabela ' . $schema . '.' . $currTable);
             }
-            $sequenceName = $this->generateSequenceName($schema, $currTable, $bkp['columnName']);
-            $metadata[$key]->idGenerator = new SequenceGenerator($sequenceName, 1);
-            $metadata[$key]->sequenceGeneratorDefinition['sequenceName'] = $sequenceName;
             unset($metadata[$key]->fieldMappings[$id]);
             $metadata[$key]->fieldMappings['id'] = $bkp;
 
+            /**
+             * @TODO: colocar opção para sequence (se usa ou não um método externo para criar, etc)
+             */
+            // $sequenceName = $this->generateSequenceName($schema, $currTable, $bkp['columnName']);
+            // $metadata[$key]->idGenerator = new SequenceGenerator($sequenceName, 1);
+            // $metadata[$key]->sequenceGeneratorDefinition['sequenceName'] = $sequenceName;
+            //
+            $metadata[$key]->idGenerator = new AssignedGenerator();
+
             echo "Corrigindo o nome das entidades em relacionamentos\n";
             foreach ($metadata[$key]->associationMappings as $assk => $ass) {
+
+                if (strpos($ass['joinColumns'][0]['name'], '_') == 2) {
+                    $metadata[$key]->associationMappings[$assk]['fieldName'] = lcfirst(substr($ass['fieldName'], 2));
+                }
+
                 $name = explode('\\', $metadata[$key]->associationMappings[$assk]['targetEntity']);
                 $pos = count($name) - 1;
                 $class = explode('.', $name[$pos]);
                 if (isset($class[1]) && $class[1]) {
                     $name[$pos] = $class[0] . ucfirst($class[1]);
                 }
-                $name[$pos] = substr($name[$pos], 2);
+                $name[$pos] = str_replace('TbProj', '', $name[$pos]); //substr($name[$pos], 2);
 
                 $metadata[$key]->associationMappings[$assk]['targetEntity'] = implode('\\', $name);
 
@@ -255,7 +284,7 @@ class DbReverseService extends DevelService
                 if (isset($class[1]) && $class[1]) {
                     $name[$pos] = $class[0] . ucfirst($class[1]);
                 }
-                $name[$pos] = substr($name[$pos], 2);
+                $name[$pos] = str_replace('TbProj', '', $name[$pos]); //substr($name[$pos], 2);
 
                 $metadata[$key]->associationMappings[$assk]['sourceEntity'] = implode('\\', $name);
             }
@@ -266,63 +295,63 @@ class DbReverseService extends DevelService
 
             $egn->writeEntityClass($entity, str_replace(str_replace('\\', $dsp, $nspEntity), '', $model_dir));
 
-            $entityCode = file_get_contents($model_dir . $className . ".php");
-            if (!strstr($entityCode, 'HasLifecycleCallbacks')) {
-                $entityCode = str_replace(
-                    "@ORM\\Entity",
-                    "@ORM\\Entity(repositoryClass=\"\\$nspRepo\\$className\")\n * @ORM\HasLifecycleCallbacks()",
-                    $entityCode
-                );
-            }
+            // $entityCode = file_get_contents($model_dir . $className . ".php");
+            // if (!strstr($entityCode, 'HasLifecycleCallbacks')) {
+            //     $entityCode = str_replace(
+            //         "@ORM\\Entity",
+            //         "@ORM\\Entity(repositoryClass=\"\\$nspRepo\\$className\")\n * @ORM\HasLifecycleCallbacks()",
+            //         $entityCode
+            //     );
+            // }
 
-            echo "Definindo o repositorio padrao da Entidade e adicionando Lifecycle Callbacks\n";
-            //define o repository default da classe
+            // echo "Definindo o repositorio padrao da Entidade e adicionando Lifecycle Callbacks\n";
+            // //define o repository default da classe
 
-            //$entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }", 'isValid()\n    {\n        parent::isValid()\n    }', $entityCode);
-            $entityCode = str_replace('private', 'protected', $entityCode);
+            // //$entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }", 'isValid()\n    {\n        parent::isValid()\n    }', $entityCode);
+            // $entityCode = str_replace('private', 'protected', $entityCode);
 
-            file_put_contents($model_dir . $className . ".php", $entityCode);
+            // file_put_contents($model_dir . $className . ".php", $entityCode);
 
-            echo 'Criado arquivo ' . $model_dir . $className . ".php\n";
+            // echo 'Criado arquivo ' . $model_dir . $className . ".php\n";
 
-            //cria o repository se já não existir
-            echo "Criando o repositorio da Entidade, caso ja nao exista\n";
-            if (!file_exists($repos_dir . $className . '.php')) {
-                $repo = $this->generateClassSkeleton(
-                    $nspRepo,
-                    $className,
-                    '\\SanSIS\\BizlayBundle\\Repository\\AbstractRepository',
-                    null,
-                    array(
-                        '\Doctrine\\ORM\\Query',
-                    )
-                );
-                file_put_contents($repos_dir . $className . '.php', $repo);
-                echo 'Criado arquivo ' . $repos_dir . $className . ".php\n";
-            }
+            // //cria o repository se já não existir
+            // echo "Criando o repositorio da Entidade, caso ja nao exista\n";
+            // if (!file_exists($repos_dir . $className . '.php')) {
+            //     $repo = $this->generateClassSkeleton(
+            //         $nspRepo,
+            //         $className,
+            //         '\\SanSIS\\BizlayBundle\\Repository\\AbstractRepository',
+            //         null,
+            //         array(
+            //             '\Doctrine\\ORM\\Query',
+            //         )
+            //     );
+            //     file_put_contents($repos_dir . $className . '.php', $repo);
+            //     echo 'Criado arquivo ' . $repos_dir . $className . ".php\n";
+            // }
         }
 
         exec('php app' . $dsp . 'console doctrine:generate:entities ' . $bundleName);
 
         //Corrige a definição do isValid()
-        foreach ($metadata as $key => $entity) {
-            $name = explode('\\', $entity->name);
+        // foreach ($metadata as $key => $entity) {
+        //     $name = explode('\\', $entity->name);
 
-            $pos = count($name) - 1;
-            $class = explode('.', $name[$pos]);
-            if (isset($class[1]) && $class[1]) {
-                $name[$pos] = ucfirst($class[1]);
-            }
-            $className = $name[$pos];
+        //     $pos = count($name) - 1;
+        //     $class = explode('.', $name[$pos]);
+        //     if (isset($class[1]) && $class[1]) {
+        //         $name[$pos] = ucfirst($class[1]);
+        //     }
+        //     $className = $name[$pos];
 
-            $entityCode = file_get_contents($model_dir . $className . ".php");
-            $entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }",
-                "isValid()\n    {\n        parent::isValid();\n    }",
-                $entityCode);
+        //     $entityCode = file_get_contents($model_dir . $className . ".php");
+        //     $entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }",
+        //         "isValid()\n    {\n        parent::isValid();\n    }",
+        //         $entityCode);
 
-            file_put_contents($model_dir . $className . ".php", $entityCode);
-            echo "isValid da entidade corrigido\n";
-        }
+        //     file_put_contents($model_dir . $className . ".php", $entityCode);
+        //     echo "isValid da entidade corrigido\n";
+        // }
 
     }
 

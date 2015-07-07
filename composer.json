@@ -1,5 +1,5 @@
 {
-    "name": "sansis/devel-bundle",
+    "name": "sansis/bislaydevel-bundle",
     "description": "Bundle para reversa de banco de dados e criação de cruds automáticos",
     "license": "Commercial",
     "type": "symfony-bundle",
@@ -11,10 +11,10 @@
     "repositories": [
         {
             "type": "git",
-            "url": "https://sansis.visualstudio.com/DefaultCollection/_git/CrudBundle"
+            "url": "https://github.com/phackwer/BizlayCrudBundle"
         }, {
             "type": "git",
-            "url": "https://sansis.visualstudio.com/DefaultCollection/_git/BizlayBundle"
+            "url": "https://github.com/phackwer/BizlayBundle"
         }
     ],
     "require": {
@@ -25,6 +25,5 @@
           "SanSIS\\DevelBundle": ""
         }
     },
-    "target-dir": "SanSIS/DevelBundle"
 }
 
