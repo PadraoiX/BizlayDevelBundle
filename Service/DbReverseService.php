@@ -333,7 +333,7 @@ class DbReverseService extends DevelService
 
         exec('php app' . $dsp . 'console doctrine:generate:entities ' . $bundleName);
 
-        Corrige a definição do isValid()
+        //Corrige a definição do isValid()
         foreach ($metadata as $key => $entity) {
             $name = explode('\\', $entity->name);
 
