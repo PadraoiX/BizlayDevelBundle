@@ -24,6 +24,7 @@
         "psr-0": {
           "SanSIS\\DevelBundle": ""
         }
-    }
+    },
+    "target-dir": "SanSIS/DevelBundle"
 }
 
