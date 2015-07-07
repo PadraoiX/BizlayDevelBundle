@@ -6,12 +6,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateCrudCommand extends ContainerAwareCommand
+class GenerateRestCrudCommand extends ContainerAwareCommand
 {
 
     protected function configure()
     {
-        $this->setName('sansis:generate:crud')
+        $this->setName('sansis:generate:restcrud')
             ->setDescription('Geracao de Cruds a partir de entidades geradas pela reversa.')
             ->addArgument('targetBundle', InputArgument::REQUIRED, 'Bundle que contém a entidade sobre a qual deve ser criado o Crud.')
             ->addArgument('rootEntity', InputArgument::REQUIRED, 'Qual entidade o Crud utilizará como raiz.');
@@ -19,11 +19,11 @@ class GenerateCrudCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $help = "                Gerador de estrutura de CRUDS a partir de reversa do banco de dados";
+        $help = "                Gerador de estrutura de CRUDS REST a partir de reversa do banco de dados";
         
         $this->printBrasil($help, $output);
         
-        $service = $this->getContainer()->get('generatecrud.service');
+        $service = $this->getContainer()->get('generaterestcrud.service');
         $service->setContainer($this->getContainer());
         $dto = $this->getContainer()->get('servicedto');
         $bundles = $this->getContainer()

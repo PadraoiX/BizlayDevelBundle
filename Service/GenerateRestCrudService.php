@@ -6,11 +6,11 @@ use \SanSIS\DevelBundle\Service\DevelService;
 use \Symfony\Component\DependencyInjection\Container;
 
 /**
- * Class GenerateCrudService
+ * Class GenerateRestCrudService
  * @package SanSIS\DevelBundle\Service
- * @DI\Service("generatecrud.service")
+ * @DI\Service("generaterestcrud.service")
  */
-class GenerateCrudService extends DevelService
+class GenerateRestCrudService extends DevelService
 {
 
     protected $container;
@@ -51,9 +51,6 @@ class GenerateCrudService extends DevelService
         
         $this->mkdir($targetDir . 'Controller');
         $this->mkdir($targetDir . 'Service');
-        $this->mkdir($targetDir . 'Resources');
-        $this->mkdir($targetDir . 'Resources' . $dsp . 'views');
-        $this->mkdir($targetDir . $dsp . 'Resources' . $dsp . 'views' . $dsp . $entity);
     }
 
     public function getTemplateData()
@@ -126,14 +123,8 @@ class GenerateCrudService extends DevelService
         
         $skelPath = $this->getTemplateDir();
         $data = $this->getTemplateData();
-        $controllerCode = $this->prepareTemplate($skelPath . 'Controller' . $dsp . 'TemplateController.php.tpl', $data);
+        $controllerCode = $this->prepareTemplate($skelPath . 'Controller' . $dsp . 'TemplateRestController.php.tpl', $data);
         $serviceCode = $this->prepareTemplate($skelPath . 'Service' . $dsp . 'TemplateService.php.tpl', $data);
-        $createCode = $this->prepareTemplate($skelPath . 'Resources' . $dsp . 'views' . $dsp . 'create.html.twig', $data);
-        $editCode = $this->prepareTemplate($skelPath . 'Resources' . $dsp . 'views' . $dsp . 'edit.html.twig', $data);
-        $formCode = $this->prepareTemplate($skelPath . 'Resources' . $dsp . 'views' . $dsp . 'form.html.twig', $data);
-        $indexCode = $this->prepareTemplate($skelPath . 'Resources' . $dsp . 'views' . $dsp . 'index.html.twig', $data);
-        $searchCode = $this->prepareTemplate($skelPath . 'Resources' . $dsp . 'views' . $dsp . 'searchform.html.twig', $data);
-        $viewCode = $this->prepareTemplate($skelPath . 'Resources' . $dsp . 'views' . $dsp . 'view.html.twig', $data);
         
         if (! file_exists($targetDir . 'Controller' . $dsp . $entity . 'Controller.php')) {
             echo "Criando arquivo " . $targetDir . 'Controller' . $dsp . $entity . 'Controller.php' . "\n";
@@ -142,30 +133,6 @@ class GenerateCrudService extends DevelService
         if (! file_exists($targetDir . 'Service' . $dsp . $entity . 'Service.php')) {
             echo "Criando arquivo " . $targetDir . 'Service' . $dsp . $entity . 'Service.php' . "\n";
             file_put_contents($targetDir . 'Service' . $dsp . $entity . 'Service.php', $serviceCode);
-        }
-        if (! file_exists($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'create.html.twig')) {
-            echo "Criando arquivo " . $targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'create.html.twig' . "\n";
-            file_put_contents($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'create.html.twig', $createCode);
-        }
-        if (! file_exists($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'edit.html.twig')) {
-            echo "Criando arquivo " . $targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'edit.html.twig' . "\n";
-            file_put_contents($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'edit.html.twig', $editCode);
-        }
-        if (! file_exists($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'form.html.twig')) {
-            echo "Criando arquivo " . $targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'form.html.twig' . "\n";
-            file_put_contents($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'form.html.twig', $formCode);
-        }
-        if (! file_exists($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'index.html.twig')) {
-            echo "Criando arquivo " . $targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'index.html.twig' . "\n";
-            file_put_contents($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'index.html.twig', $indexCode);
-        }
-        if (! file_exists($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'searchform.html.twig')) {
-            echo "Criando arquivo " . $targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'searchform.html.twig' . "\n";
-            file_put_contents($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'searchform.html.twig', $searchCode);
-        }
-        if (! file_exists($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'view.html.twig')) {
-            echo "Criando arquivo " . $targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'view.html.twig' . "\n";
-            file_put_contents($targetDir . 'Resources' . $dsp . 'views' . $dsp . $entity . $dsp . 'view.html.twig', $viewCode);
         }
         echo "Estrutura criada\n";
     }
