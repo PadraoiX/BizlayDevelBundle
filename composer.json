@@ -1,5 +1,5 @@
 {
-    "name": "sansis/bislaydevel-bundle",
+    "name": "sansis/bizlaydevel-bundle",
     "description": "Bundle para reversa de banco de dados e criação de cruds automáticos",
     "license": "Commercial",
     "type": "symfony-bundle",
