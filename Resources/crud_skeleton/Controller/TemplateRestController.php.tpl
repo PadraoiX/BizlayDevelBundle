@@ -2,7 +2,7 @@
 
 namespace %BUNDLENAMESPACE%\Controller;
 
-use \Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use \FOS\RestBundle\Controller\Annotations as Rest;
 use \SanSIS\CrudBundle\Controller\ControllerRestCrudAbstract;
 
 /**
@@ -20,7 +20,8 @@ use \SanSIS\CrudBundle\Controller\ControllerRestCrudAbstract;
  * Deve-se também sobrescrever qualquer action que não *
  * deva estar disponível.                              *
  *******************************************************
- * @Route("/%ENTITYNAMELOWER%")
+ * @Rest\Prefix("%ENTITYNAMELOWER%")
+ * @Rest\NamePrefix("api_%ENTITYNAMELOWER%_")
  ******************************************************/
 class %ENTITYNAME%Controller extends ControllerRestCrudAbstract
 {
