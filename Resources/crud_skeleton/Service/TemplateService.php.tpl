@@ -81,4 +81,28 @@ class %ENTITYNAME%Service extends AbstractEntityService
     {
         parent::removeEntity($id);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checkUserEditPermission($id, $item)
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checkUserViewPermission($id, $item)
+    {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function checkUserDeletePermission($id, $item)
+    {
+        return true;
+    }
 }
