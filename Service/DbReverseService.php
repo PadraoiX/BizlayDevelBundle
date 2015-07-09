@@ -295,40 +295,40 @@ class DbReverseService extends DevelService
 
             $egn->writeEntityClass($entity, str_replace(str_replace('\\', $dsp, $nspEntity), '', $model_dir));
 
-            // $entityCode = file_get_contents($model_dir . $className . ".php");
-            // if (!strstr($entityCode, 'HasLifecycleCallbacks')) {
-            //     $entityCode = str_replace(
-            //         "@ORM\\Entity",
-            //         "@ORM\\Entity(repositoryClass=\"\\$nspRepo\\$className\")\n * @ORM\HasLifecycleCallbacks()",
-            //         $entityCode
-            //     );
-            // }
+            $entityCode = file_get_contents($model_dir . $className . ".php");
+            if (!strstr($entityCode, 'HasLifecycleCallbacks')) {
+                $entityCode = str_replace(
+                    "@ORM\\Entity",
+                    "@ORM\\Entity(repositoryClass=\"\\$nspRepo\\$className\")\n * @ORM\HasLifecycleCallbacks()",
+                    $entityCode
+                );
+            }
 
-            // echo "Definindo o repositorio padrao da Entidade e adicionando Lifecycle Callbacks\n";
-            // //define o repository default da classe
+            echo "Definindo o repositorio padrao da Entidade e adicionando Lifecycle Callbacks\n";
+            //define o repository default da classe
 
-            // //$entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }", 'isValid()\n    {\n        parent::isValid()\n    }', $entityCode);
-            // $entityCode = str_replace('private', 'protected', $entityCode);
+            //$entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }", 'isValid()\n    {\n        parent::isValid()\n    }', $entityCode);
+            $entityCode = str_replace('private', 'protected', $entityCode);
 
-            // file_put_contents($model_dir . $className . ".php", $entityCode);
+            file_put_contents($model_dir . $className . ".php", $entityCode);
 
-            // echo 'Criado arquivo ' . $model_dir . $className . ".php\n";
+            echo 'Criado arquivo ' . $model_dir . $className . ".php\n";
 
-            // //cria o repository se já não existir
-            // echo "Criando o repositorio da Entidade, caso ja nao exista\n";
-            // if (!file_exists($repos_dir . $className . '.php')) {
-            //     $repo = $this->generateClassSkeleton(
-            //         $nspRepo,
-            //         $className,
-            //         '\\SanSIS\\BizlayBundle\\Repository\\AbstractRepository',
-            //         null,
-            //         array(
-            //             '\Doctrine\\ORM\\Query',
-            //         )
-            //     );
-            //     file_put_contents($repos_dir . $className . '.php', $repo);
-            //     echo 'Criado arquivo ' . $repos_dir . $className . ".php\n";
-            // }
+            //cria o repository se já não existir
+            echo "Criando o repositorio da Entidade, caso ja nao exista\n";
+            if (!file_exists($repos_dir . $className . '.php')) {
+                $repo = $this->generateClassSkeleton(
+                    $nspRepo,
+                    $className,
+                    '\\SanSIS\\BizlayBundle\\Repository\\AbstractRepository',
+                    null,
+                    array(
+                        '\Doctrine\\ORM\\Query',
+                    )
+                );
+                file_put_contents($repos_dir . $className . '.php', $repo);
+                echo 'Criado arquivo ' . $repos_dir . $className . ".php\n";
+            }
         }
 
         exec('php app' . $dsp . 'console doctrine:generate:entities ' . $bundleName);
