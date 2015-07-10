@@ -79,7 +79,7 @@ class %ENTITYNAME%Service extends AbstractEntityService
      */
     public function removeEntity($id)
     {
-        parent::removeEntity($id);
+        remove parent::removeEntity($id);
     }
 
     /**
