@@ -85,7 +85,7 @@ class %ENTITYNAME%Service extends AbstractEntityService
     /**
      * {@inheritdoc}
      */
-    public function checkUserEditPermission($id, $item)
+    public function checkUserEditPermission($item)
     {
         return true;
     }
@@ -93,7 +93,7 @@ class %ENTITYNAME%Service extends AbstractEntityService
     /**
      * {@inheritdoc}
      */
-    public function checkUserViewPermission($id, $item)
+    public function checkUserViewPermission($item)
     {
         return true;
     }
@@ -101,7 +101,7 @@ class %ENTITYNAME%Service extends AbstractEntityService
     /**
      * {@inheritdoc}
      */
-    public function checkUserDeletePermission($id, $item)
+    public function checkUserDeletePermission($item)
     {
         return true;
     }
