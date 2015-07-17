@@ -299,7 +299,7 @@ class DbReverseService extends DevelService
             if (!strstr($entityCode, 'HasLifecycleCallbacks')) {
                 $entityCode = str_replace(
                     "@ORM\\Entity",
-                    "@ORM\\Entity(repositoryClass=\"\\$nspRepo\\$className\")\n * @ORM\HasLifecycleCallbacks()",
+                    "@ORM\\Entity(repositoryClass=\"\\$nspRepo\\$className\")\n * @ORM\\HasLifecycleCallbacks()\n * @Doctrine\\Common\\Annotations\\Annotation\\IgnoreAnnotation(\"innerEntity\")",
                     $entityCode
                 );
             }
