@@ -4,6 +4,7 @@ namespace SanSIS\DevelBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ReverseCommand extends ContainerAwareCommand
@@ -32,8 +33,7 @@ class ReverseCommand extends ContainerAwareCommand
                 'ignore-prefix',
                 'ip',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Prefixos das tabelas a serem retirados das entidades',
-                array('tb', 'Tb', 'TB');
+                'Prefixos das tabelas a serem retirados das entidades'
             )
         ;
     }

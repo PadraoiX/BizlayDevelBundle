@@ -216,7 +216,7 @@ class DbReverseService extends DevelService
             /**
              * @TODO AJUSTAR O NOME DA ENTIDADE!
              */
-            $name[$pos] = str_replace('TbProj', '', $name[$pos]); //substr($name[$pos], 2);
+            $name[$pos] = $this->filterTbPrefix($name[$pos]);
             $className = $name[$pos];
             $entity->name = implode('\\', $name);
 
@@ -274,7 +274,7 @@ class DbReverseService extends DevelService
                 if (isset($class[1]) && $class[1]) {
                     $name[$pos] = $class[0] . ucfirst($class[1]);
                 }
-                $name[$pos] = str_replace('TbProj', '', $name[$pos]); //substr($name[$pos], 2);
+                $name[$pos] = $this->filterTbPrefix($name[$pos]);
 
                 $metadata[$key]->associationMappings[$assk]['targetEntity'] = implode('\\', $name);
 
@@ -284,7 +284,7 @@ class DbReverseService extends DevelService
                 if (isset($class[1]) && $class[1]) {
                     $name[$pos] = $class[0] . ucfirst($class[1]);
                 }
-                $name[$pos] = str_replace('TbProj', '', $name[$pos]); //substr($name[$pos], 2);
+                $name[$pos] = $this->filterTbPrefix($name[$pos]);
 
                 $metadata[$key]->associationMappings[$assk]['sourceEntity'] = implode('\\', $name);
             }
@@ -352,6 +352,17 @@ class DbReverseService extends DevelService
             echo "isValid da entidade corrigido\n";
         }
 
+    }
+
+    public function filterTbPrefix($name)
+    {
+        $ips = $this->getDto()->query->get('ignore-prefix');
+        $ips[] = 'Tb';
+        foreach ($ips as $ip) {
+            if (strpos($name, $ip) == 0) {
+                return str_replace($ip, '', $name);
+            }
+        }
     }
 
     /**
