@@ -28,6 +28,13 @@ class ReverseCommand extends ContainerAwareCommand
                 InputArgument::IS_ARRAY,
                 'Nome das tabelas para reversa (deixe em branco para todas as tabelas).'
             )
+            ->addOption(
+                'ignore-prefix',
+                'ip',
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'Prefixos das tabelas a serem retirados das entidades',
+                array('tb', 'Tb', 'TB');
+            )
         ;
     }
 
@@ -68,6 +75,7 @@ class ReverseCommand extends ContainerAwareCommand
         $dto->query->set('bundleNameSpace', $npBundle);
         $dto->query->set('schema', $input->getArgument('schemaName'));
         $dto->query->set('tables', $input->getArgument('tables'));
+        $dto->query->set('ignore-prefix', $input->getOption('ignore-prefix'));
 
         $service->setDto($dto);
         $tables = $service->reverseEntities();

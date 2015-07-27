@@ -295,6 +295,7 @@ class DbReverseService extends DevelService
 
             $egn->writeEntityClass($entity, str_replace(str_replace('\\', $dsp, $nspEntity), '', $model_dir));
 
+            //define o repository default da classe e ativa o lifecycles
             $entityCode = file_get_contents($model_dir . $className . ".php");
             if (!strstr($entityCode, 'HasLifecycleCallbacks')) {
                 $entityCode = str_replace(
@@ -305,9 +306,7 @@ class DbReverseService extends DevelService
             }
 
             echo "Definindo o repositorio padrao da Entidade e adicionando Lifecycle Callbacks\n";
-            //define o repository default da classe
 
-            //$entityCode = str_replace("isValid()\n    {\n        // Add your code here\n    }", 'isValid()\n    {\n        parent::isValid()\n    }', $entityCode);
             $entityCode = str_replace('private', 'protected', $entityCode);
 
             file_put_contents($model_dir . $className . ".php", $entityCode);
