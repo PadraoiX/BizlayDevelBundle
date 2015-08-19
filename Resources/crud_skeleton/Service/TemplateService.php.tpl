@@ -70,6 +70,13 @@ class %ENTITYNAME%Service extends AbstractEntityService
     /**
      * {@inheritdoc}
      */
+    public function preFlush(ServiceDto $dto)
+    {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function postSave(ServiceDto $dto)
     {
     }
