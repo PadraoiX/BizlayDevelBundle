@@ -231,7 +231,6 @@ class DbReverseService extends DevelService
              * Corrige o nome das colunas retirando as duas primeiras letras referentes ao tipo e colocando uc_first para todas.
              */
             foreach ($metadata[$key]->fieldMappings as $k => $v) {
-                echo strpos(strtolower($v['columnName']), 'fl_');
                 if (strpos(strtolower($v['columnName']), 'fl_') === 0) {
                     $metadata[$key]->fieldMappings[$k]['fieldName'] = 'is' . substr($v['fieldName'], 2);
                 } else if (strpos($v['columnName'], '_') == 2) {
@@ -303,6 +302,48 @@ class DbReverseService extends DevelService
                     "@ORM\\Entity(repositoryClass=\"\\$nspRepo\\$className\")\n * @ORM\\HasLifecycleCallbacks()\n * @Doctrine\\Common\\Annotations\\Annotation\\IgnoreAnnotation(\"innerEntity\")",
                     $entityCode
                 );
+            }
+
+            /**
+             * Adiciona o necessário para obter o json schema da entidade com o Knp\JsonSchemaBundle
+             */
+            if (!strstr($entityCode, 'JsonSchemaBundle')) {
+                echo "Adicionando JsonSchemaBundle para geração de json schemas das entidades\n";
+                $entityCode = str_replace(
+                    "use Doctrine\\ORM\\Mapping as ORM;",
+                    "use Doctrine\\ORM\\Mapping as ORM;\nuse Knp\\JsonSchemaBundle\\Annotations as JSON;",
+                    $entityCode
+                );
+                $entityCode = str_replace(
+                    "@Doctrine\\Common\\Annotations\\Annotation\\IgnoreAnnotation(\"innerEntity\")",
+                    "@Doctrine\\Common\\Annotations\\Annotation\\IgnoreAnnotation(\"innerEntity\")\n * @JSON\\Schema",
+                    $entityCode
+                );
+            }
+
+            /**
+             * Corrige a entidade gerada para sempre usar o método identity
+             */
+            $seqStr = '* @ORM\\GeneratedValue(strategy="SEQUENCE")';
+            if (strstr($entityCode, $seqStr)) {
+                echo "Corrigindo o a estratégia da sequence para IDENTITY\n";
+                $pos = strpos($entityCode, $seqStr);
+                $begin = substr($entityCode, 0, $pos);
+                $end = substr($entityCode, $pos + strlen($seqStr));
+                $pos = strpos($end, "*/");
+                $end = substr($end, $pos);
+                $entityCode = $begin . "* @ORM\\GeneratedValue(strategy=\"IDENTITY\")\n     " . $end;
+                // die($begin);
+                // $entityCode = str_replace(
+                //     "use Doctrine\\ORM\\Mapping as ORM;",
+                //     "use Doctrine\\ORM\\Mapping as ORM;\nuse Knp\\JsonSchemaBundle\\Annotations as JSON;",
+                //     $entityCode
+                // );
+                // $entityCode = str_replace(
+                //     "@Doctrine\\Common\\Annotations\\Annotation\\IgnoreAnnotation(\"innerEntity\")",
+                //     "@Doctrine\\Common\\Annotations\\Annotation\\IgnoreAnnotation(\"innerEntity\")\n * @JSON\\Schema",
+                //     $entityCode
+                // );
             }
 
             echo "Definindo o repositorio padrao da Entidade e adicionando Lifecycle Callbacks\n";
