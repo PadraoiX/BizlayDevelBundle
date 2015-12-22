@@ -71,8 +71,7 @@ class GenerateRestCrudService extends DevelService
             'BUNDLENAME' => $dto->query->get('BUNDLENAME'),
             'ENTITYNAME' => $dto->query->get('ENTITYNAME'),
             'ENTITYFULLNAME' => $dto->query->get('ENTITYFULLNAME'),
-            'ENTITYNAMELOWER' => $dto->query->get('ENTITYNAMELOWER'),
-            'FORM' => $this->buildForm($dto->query->get('ATTRS')),
+            'ENTITYNAMELOWER' => $dto->query->get('ENTITYNAMELOWER')
         );
     }
 
