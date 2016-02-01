@@ -17,9 +17,6 @@
             "url": "https://github.com/phackwer/BizlayBundle"
         }
     ],
-    "require": {
-        "sansis/bizlaycrud-bundle": "dev-master"
-    },
     "autoload": {
         "psr-0": {
           "SanSIS\\DevelBundle": ""
