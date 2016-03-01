@@ -20,9 +20,9 @@ class GenerateCrudCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $help = "                Gerador de estrutura de CRUDS a partir de reversa do banco de dados";
-        
+
         $this->printBrasil($help, $output);
-        
+
         $service = $this->getContainer()->get('generatecrud.service');
         $service->setContainer($this->getContainer());
         $dto = $this->getContainer()->get('servicedto');
@@ -30,7 +30,7 @@ class GenerateCrudCommand extends ContainerAwareCommand
             ->get('kernel')
             ->getBundles();
         $bundle = $input->getArgument('targetBundle');
-        
+
         if (strstr($bundle, '\\')) {
             foreach (bundles as $b) {
                 if ($b->getNamespace() == $bundle) {
@@ -38,11 +38,11 @@ class GenerateCrudCommand extends ContainerAwareCommand
                     break;
                 }
             }
-        } else 
+        } else
             if (strstr($bundle, '@')) {
                 $bundle = str_replace('@', '', $bundle);
             }
-        
+
         foreach ($bundles as $n => $b) {
             if ($b->getName() == $bundle) {
                 $bundle = $b->getName();
@@ -50,22 +50,22 @@ class GenerateCrudCommand extends ContainerAwareCommand
                 break;
             }
         }
-        
+
         $bundleDir = $this->getContainer()
             ->get('kernel')
             ->locateResource('@' . $bundle);
-        
+
         $rootEntity = $input->getArgument('rootEntity');
         $shortName = explode('\\', $rootEntity);
         $shortName = $shortName[count($shortName) - 1];
-        
+
         if (strstr($rootEntity, '\\')) {
             $ent = $rootEntity;
         } else {
             $ent = $npBundle . '\\Entity\\' . $shortName;
             $rootEntity = null;
         }
-        
+
         if (! class_exists($ent)) {
             $output->writeln("<bg=red;fg=white>" . str_pad("", 120, " ") . "</bg=red;fg=white>");
             $output->writeln("<bg=red;fg=white>" . str_pad("  Entidade inexistente: " . $ent, 120) . "</bg=red;fg=white>");
@@ -76,15 +76,15 @@ class GenerateCrudCommand extends ContainerAwareCommand
         } else {
             $ent = new $ent();
         }
-        
+
         $dto->query->set('BUNDLEDIR', $bundleDir);
         $dto->query->set('BUNDLENAMESPACE', $npBundle);
         $dto->query->set('BUNDLENAME', $bundle);
         $dto->query->set('ENTITYNAME', $shortName);
         $dto->query->set('ENTITYFULLNAME', $rootEntity);
         $dto->query->set('ENTITYNAMELOWER', strtolower($shortName));
-        $dto->query->set('ATTRS', $ent->buildFullEmptyEntity());
-        
+//        $dto->query->set('ATTRS', $ent->buildFullEmptyEntity());
+
         $service->setDto($dto);
         $service->generateCrud();
     }
@@ -92,9 +92,9 @@ class GenerateCrudCommand extends ContainerAwareCommand
     public function printBrasil($mensagem, $output)
     {
         $line = str_pad("", 120, " ");
-        
+
         $msgs = explode("\n", $mensagem);
-        
+
         $output->writeln("");
         $output->writeln("<bg=green>${line}</bg=green>");
         $output->writeln("<bg=yellow>${line}</bg=yellow>");
